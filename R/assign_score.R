@@ -1,15 +1,46 @@
+#' Add the best matching gene and the quality score to an annotation
+#' table.
+#' 
+#' The \code{assign_score} function takes a data frame containing
+#' (at least) the probe set ID and the quality scores and adds to
+#' it two columns containing the ID of the best matching gene/refseq
+#' and the overall quality score.
+#' @param x data frame containing (at least) the probe set IDs and
+#' the quality string computed by \code{add_quality_string}
+#' @param qs_col character, name of the column containing the quality
+#' string. Defaults to \code{quality_string}.
+#' @examples
+#' data(psets_and_qstrings)
+#' new_annot <- assign_score(psets_and_qstrings)
+#' @return a data frame obtaining from the binding of the original
+#' input \code{x} and of the two additional columns with the best 
+#' match and the final score.
+#' @author Giovanni d'Ario
+#' @export
+assign_score <- function(x, qs_col="quality_string") {
+    quality_strings <- x[[qs_col]]
+    best_match_and_score <- sapply(quality_strings,
+                                   compute_score,
+                                   simplify = FALSE)
+    names(best_match_and_score) <- NULL
+    best_match_and_score <- do.call(rbind, best_match_and_score)
+    if(nrow(best_match_and_score) == nrow(x))
+        out <- cbind(x, best_match_and_score)
+    return(out)
+}
+
 #' Assign a score to each gene of a quality table
 #' 
-#' \code{assign_score} takes a table produced by 
+#' \code{compute_score} takes a table produced by 
 #' \code{quality_string_to_table} assigns a numeric score to each
 #' column (gene or refseq, depending on how the table has been 
-#' created). The details of the score are described in the 
-#' details section. The idea behind this function is to provide the
+#' created). The details of the score are described below.
+#' The idea behind this function is to provide the
 #' user with a quick measure of the qualityt of the probe set.
 #' However, when a low score probe set is encountered, we recommend
 #' to call \code{quality_string_to_table} in order to have a more
 #' complete picture.
-#' @details The scoring method used here assign one point to each
+#' The scoring method used here assign one point to each
 #' zero-mismatch probe, -1/2 to each 1-mismatch, -1/3 to 2-mismatch 
 #' and -1/4 to 3-mismatch probes. The gene with the highest score 
 #' is then selected while the score of all the other matches is 
@@ -37,14 +68,14 @@
 #' silently converted into a table by calling 
 #' \code{quality_string_to_table}.
 #' @param w numeric weights to be given to the number of mismatches.
-#' @return a numeric vector containing the scores for each gene in
-#' the quality table
+#' @return a data frame with the ID of the best matching gene/refseq
+#' and the relative final score.
 #' @examples 
-#' data("data/psets_and_qstrings.RData")
-#' s <- probe_set_annotation$quality_string[1]
-#' x <- quality_string_to_table(x)
+#' data("psets_and_qstrings")
+#' s <- psets_and_qstrings$quality_string[1]
+#' x <- quality_string_to_table(s)
 #' @author Giovanni d'Ario <giovanni.dario@gmail.com>
-assign_score <- function(x, w=c(1, -1/2, -1/3, -1/4)) {
+compute_score <- function(x, w=c(1, -1/2, -1/3, -1/4)) {
     
     if(is.character(x))
         x <- quality_string_to_table(x)
@@ -62,6 +93,7 @@ assign_score <- function(x, w=c(1, -1/2, -1/3, -1/4)) {
     ## Compute the final score as the best score minus the absolute
     ## value of the other scores
     final_score <- scores[idx_best] - sum(abs(scores[-idx_best]))
-    return(list(best_match = best_match, final_score = final_score))
+    return(data.frame(best_match = best_match, 
+                      final_score = final_score))
 }
 

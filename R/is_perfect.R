@@ -21,7 +21,6 @@ is_perfect <- function(s) {
 ##' Check if all the probe sets associated with a particular
 ##' combination of Gene ID and Refseq ID are perfect
 ##'
-##' .. content for \details{} ..
 ##' @title Check if all the probe sets associated with a particular
 ##' combination of Gene ID and Refseq ID are perfect
 ##' @param generef a string of the format geneid:refseqid

@@ -5,7 +5,7 @@
 #' end user.
 #' @param s: character. A quality string.
 #' @simplify: logical. Should the output be simplified?
-#' @author Giovanni d'Ario <giovanni.dario@gmail.com>
+#' @author Giovanni d'Ario
 get_gene_ids <- function(s, simplify=FALSE) {
     tmp <- unlist(strsplit(s, split = "//"))
     tmp <- strsplit(tmp, split = "/")
@@ -18,6 +18,7 @@ get_gene_ids <- function(s, simplify=FALSE) {
     }
     return(gidrefs)
 }
+
 
 get_row_names <- function(tmp) {
     x <- tmp[[1]]

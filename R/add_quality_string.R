@@ -3,15 +3,26 @@
 #'
 #' @title Generate the annotation table that will be used for the 
 #' quality string.
-#' @param input.file: character string containing the full path to
+#' @param input.file character string containing the full path to
 #' the input file (a Bowtie output file preprocessed by 
 #' `preprocess_bowtie_output.R`)
-#' @param output.file: character string containing the full path to 
+#' @param output.file character string containing the full path to 
 #' the output file where the probe sets and their quality string 
 #' will be saved. 
-#' @param by.refseq: logical, indicates whether the number of
+#' @param by.refseq logical, indicates whether the number of
 #' mismatches should be tabulated against the refseq_ids rather
 #' than against the gene_ids. Default is FALSE
+#' @param rm.affx logical, should the probe sets starting with
+#' \code{AFFX} (usually controls) be removed? Default is TRUE.
+#' @param rm.asense logical. Should the probes mapping on the 
+#' opposite strand be removed? Default is FALSE, in which case 
+#' the gene/refseq ID is preceded by \code{ANTISENSE}.
+#' @examples
+#' \dontrun{
+#' input.file <- "/export/big/Data/almac_annotations/new_annotation_2013/output/formatted_xcel_subset.txt"
+#' output.file <- "~/Desktop/pset_and_qscores.RData"
+#' add_quality_string(input.file = input.file, output.file = output.file)
+#' }
 #' @return an (invisible) data frame containing the probe set ID and
 #' the associated quality string.
 #' @author Giovanni d'Ario
@@ -92,7 +103,7 @@ add_quality_string <- function(
     ## Generate the quality strings
     message("Generating the quality strings...")
     
-    quality_string <- lapply(mm_table, table_to_string)
+    quality_string <- lapply(mm_table, table_to_quality_string)
     probe_set_annotation <- data.frame(probeset_id = names(quality_string),
                                        quality_string = unlist(quality_string),
                                        stringsAsFactors = FALSE)
