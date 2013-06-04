@@ -1,0 +1,45 @@
+Package: cnvtools2
+Type: Package
+Title: Functions for analyzing DNAcopy formatted CNV data with limma
+Version: 1.0
+Date: 2013-04-24
+Author: Giovanni d'Ario
+Maintainer: Giovanni d'Ario <giovanni.dario@isb-sib.ch>
+Description: The package DNAcopy produces segmented data in a format that can
+    be easily exported in a data frame. This package splits the segments such
+    that each patient, for each chromosome, will have the same number of
+    segments. This allows the creation of rectangular matrices that can be
+    analyzed with limma.
+License: GPL-2
+Collate:
+    'cnvtools-internal.R'
+    'entrezToGRanges.R'
+    'getOverlappingRanges.R'
+    'mapEntrezIdToSegments.R'
+    'segmentsToGRanges.R'
+    'DNAcopyToGRanges.R'
+    'extendRanges.R'
+    'makeSquaredRanges.R'
+    'categorizePatients.R'
+    'chromClust.R'
+    'countAberrations.R'
+    'extractFromBarcode.R'
+    'getChr18status.R'
+    'getSegmentStatus.R'
+    'plot.cna.freq.R'
+    'plotLimmaAllChroms.R'
+    'plotLimma.R'
+    'runLimma.R'
+    'squaredRangesToDataFrame.R'
+    'squaredRangesToListOfDataFrames.R'
+    'fitLimmaModel.R'
+    'disjoinAndSquare.R'
+    'extractCoefficients.R'
+    'chromLengthsHg18.R'
+    'chromLengthsHg19.R'
+Depends:
+    BiocGenerics,
+    limma,
+    GenomicRanges,
+    biomaRt,
+    nclust
