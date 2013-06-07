@@ -3,8 +3,8 @@
 #' Accessor function to extract the Entrez/Refseq gene IDs from a 
 #' quality string. This function is not supposed to be used by the
 #' end user.
-#' @param s: character. A quality string.
-#' @simplify: logical. Should the output be simplified?
+#' @param s character. A quality string.
+#' @param simplify logical. Should the output be simplified?
 #' @author Giovanni d'Ario
 get_gene_ids <- function(s, simplify=FALSE) {
     tmp <- unlist(strsplit(s, split = "//"))

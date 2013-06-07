@@ -94,6 +94,7 @@ compute_score <- function(x, w=c(1, -1/2, -1/3, -1/4)) {
     ## value of the other scores
     final_score <- scores[idx_best] - sum(abs(scores[-idx_best]))
     return(data.frame(best_match = best_match, 
-                      final_score = final_score))
+                      final_score = final_score,
+                      stringsAsFactors = FALSE))
 }
 

@@ -4,7 +4,7 @@
 #' with the number of mismatches in the rows and the Entrez IDs or
 #' the Refseq IDs, depending on how the quality string was obtained,
 #' in the columns.
-#' @param x: character. The quality string
+#' @param x character. The quality string
 #' @return a table with the number of mismatches in the rows and the
 #' Entrez/Refseq IDs in the columns
 #' @examples

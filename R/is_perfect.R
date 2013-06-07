@@ -7,14 +7,19 @@
 ##' turns out to be "perfect"
 ##' @title Check if the quality string tells that the probe set is
 ##' "perfect"
-##' @param a quality string
+##' @param s a quality string
+##' @param n_probes integer. The number of probes composing a probeset.
+##' \code{n_probes} is 11 in the old ADX platform and 12 in the new 
+##' Excel platform.
 ##' @return A logical value. If TRUE the probe set is "perfect".
 ##' @author Giovanni d'Ario
 ##' @export
-is_perfect <- function(s) {
+is_perfect <- function(s, n_probes=NULL) {
+    if(is.null(n_probes))
+        stop("Please specify the number of probes composing a probeset")
     x <- quality_string_to_table(s)
     idx1 <- (nrow(x) == 1) & (ncol(x) == 1) # maps one single gene?
-    idx2 <- x[1,1] == 11
+    idx2 <- x[1,1] == n_probes
     return(idx1 & idx2)
 }
 
@@ -23,16 +28,23 @@ is_perfect <- function(s) {
 ##'
 ##' @title Check if all the probe sets associated with a particular
 ##' combination of Gene ID and Refseq ID are perfect
-##' @param generef a string of the format geneid:refseqid
+##' @param gene_id a string of the format geneid:refseqid
 ##' @param annot an annotation data frame, obtained by applying
+##' @param n_probes integer, the number of probes composing a probeset.
+##' \code{n_probes} is 11 in the old ADX platform and 12 in the new 
+##' Excel platform.
 ##' \code{almac_reannotation} to the output of bowtie
 ##' @return a logical value: TRUE if all the probe sets associate with
-##' the generef are 'perfect'.
+##' the gene_id are 'perfect'.
 ##' @author Giovanni d'Ario
-all_perfect_probes <- function(generef=NULL,
-                               annot=NULL) {
-    idx <- grep(generef, annot$quality_string)
+are_all_psets_perfect <- function(gene_id=NULL,
+                               annot=NULL,
+                               n_probes=NULL) {
+    if(is.null(n_probes))
+        stop("Please specify the number of probes composing a probeset")
+    
+    idx <- grep(gene_id, annot$quality_string)
     tmp <- annot[idx, ]
-    out <- sapply(tmp$quality_string, is_perfect)
+    out <- sapply(tmp$quality_string, is_perfect, n_probes = n_probes)
     return(all(out))
 }

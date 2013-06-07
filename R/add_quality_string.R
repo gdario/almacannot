@@ -6,6 +6,9 @@
 #' @param input.file character string containing the full path to
 #' the input file (a Bowtie output file preprocessed by 
 #' `preprocess_bowtie_output.R`)
+#' @param chip character, the type of ALMAC array under
+#' consideration. It can be either \code{adxcrc} or \code{xcel}.
+#' The default is \code{adxcrc}.
 #' @param output.file character string containing the full path to 
 #' the output file where the probe sets and their quality string 
 #' will be saved. 
@@ -21,7 +24,7 @@
 #' \dontrun{
 #' input.file <- "/export/big/Data/almac_annotations/new_annotation_2013/output/formatted_xcel_subset.txt"
 #' output.file <- "~/Desktop/pset_and_qscores.RData"
-#' add_quality_string(input.file = input.file, output.file = output.file)
+#' add_quality_string(input.file = input.file, chip = "xcel", output.file = output.file)
 #' }
 #' @return an (invisible) data frame containing the probe set ID and
 #' the associated quality string.
@@ -29,6 +32,7 @@
 #' @export
 add_quality_string <- function(
     input.file=NULL,
+    chip=c("adxcrc", "xcel"),
     rm.affx=TRUE,
     rm.asense=FALSE,
     by.refseq=FALSE,
@@ -39,11 +43,17 @@ add_quality_string <- function(
     if(is.null(output.file))
         stop("Please enter the output file name")
     
+    chip <- match.arg(chip)
+    
+    ## All the columns are characters with the exception of the
+    ## number of mismatches (the last column).
+    colClasses <- c(rep("character", 
+                        ifelse(chip == "adxcrc", 5, 6)),
+                        "integer")
     message("Reading the bowtie Data file...")
     Data <- read.delim(file = input.file,
                        header = TRUE,
-                       colClasses = rep("character", 7),
-                       as.is = TRUE)
+                       colClasses = colClasses)
     
     ## if rm.asense = TRUE, remove everything that is mapped
     ## to the reverse strand, otherwise, prepend ANTISENSE to the
@@ -51,7 +61,7 @@ add_quality_string <- function(
     idx_antisense <- Data$strand %in% "-"
     
     if(rm.asense) {
-        Data <- Data[!idx, ]
+        Data <- Data[!idx_antisense, ]
     } else {
         Data$gene_id[idx_antisense] <- paste("ANTISENSE", 
                                              Data$gene_id[idx_antisense],
@@ -80,8 +90,8 @@ add_quality_string <- function(
     }
     
     ## Sort by probe set and by probe
-    message("Sorting by probe set and by probe")
-    idx_sort <- order(Data$probeset_id, Data$probe)
+    message("Sorting by probe set ID")
+    idx_sort <- order(Data$probeset_id)
     Data <- Data[idx_sort, ]
     
     ## Split the matrix by probe set
