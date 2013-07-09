@@ -43,9 +43,11 @@ assign_score <- function(x, qs_col="quality_string") {
 #' The scoring method used here assign one point to each
 #' zero-mismatch probe, -1/2 to each 1-mismatch, -1/3 to 2-mismatch 
 #' and -1/4 to 3-mismatch probes. The gene with the highest score 
-#' is then selected while the score of all the other matches is 
-#' sign reversed. The final score is obtained summing all the partial
-#' scores. The rationale behind this choice is probably clearer 
+#' is then selected. The final score is obtained subtacting the 
+#' absolute value of the second best score from the first one. The 
+#' absolute value is due to the fact that some second hits could be
+#' only mismatches, and an overall negative score. 
+#' The rationale behind this choice is probably clearer 
 #' looking at some examples.
 #' \enumerate{
 #' \item if all the probes are perfectly matching and no mismatch or
@@ -86,15 +88,25 @@ compute_score <- function(x, w=c(1, -1/2, -1/3, -1/4)) {
     ## Compute the scores
     scores  <- weights %*% x
     
-    ## Identify the best score and the best gene
-    idx_best <- which.max(scores)
-    best_match <- colnames(scores)[idx_best]
+    ### order according to the score
+    idx <- order(scores, decreasing=TRUE)
+    scores <- scores[, idx, drop = FALSE]
     
-    ## Compute the final score as the best score minus the absolute
-    ## value of the other scores
-    final_score <- scores[idx_best] - sum(abs(scores[-idx_best]))
+    ## Identify the best score and the best gene
+    best_match <- colnames(scores)[1]
+    
+    ## Compute the final score as the best score minus the second
+    ## best score
+    ## N.B.: we take the absolute value of the second score since 
+    ## it could be negative. Consider, for example, the case where
+    ## the second best match has no perfect match but several probes
+    ## with one mismatch.
+    if(ncol(scores) > 1) {
+        final_score <- scores[1] - abs(scores[2])
+    } else {
+        final_score <- scores[1]
+    }
     return(data.frame(best_match = best_match, 
                       final_score = final_score,
                       stringsAsFactors = FALSE))
 }
-

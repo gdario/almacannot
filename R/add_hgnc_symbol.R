@@ -44,7 +44,7 @@ add_hgnc_symbol <- function(annot,
                                        ifnotfound = NA)
     
     # In case of multiple HGNC symbols, return only the first one
-    hgnc_symbol <- lapply(hgnc_symbol, function(x) return(x[1]))
+    hgnc_symbol <- sapply(hgnc_symbol, function(x) return(x[1]))
     # Check that the length of the HGNC symbols have the same length
     # as the elements in the annotation table
     if(length(hgnc_symbol) != nrow(annot))
