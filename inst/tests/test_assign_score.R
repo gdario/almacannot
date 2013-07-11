@@ -21,7 +21,7 @@ has_dim <- function(nr, nc) {
 test_that("compute_score works on one row matrices", {
     ## Perfect probe set
     s <- "10594/0:11"
-    score <- almacannot:::compute_score(s)
+    score <- almacannot:::compute_score(s, w = c(1, -1/2, -1/3, -1/4))
     expect_that(score, is_a("data.frame"))
     expect_that(score, has_dim(nr = 1, nc = 2))
     expect_that(score[[2]], equals(11))
