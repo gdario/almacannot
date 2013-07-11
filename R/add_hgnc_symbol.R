@@ -1,6 +1,8 @@
-#' Add the HGNC gene symbols to an annotation table
-#' 
-#' The \code{add_hgnc_symbol} function takes an annotation table 
+#' @title Add the HGNC gene symbols to an annotation table
+#' @description This function adds the HGNC gene symbol to an annotation
+#' table obtained by applying \code{assign_score} to the output of a 
+#' Bowtie alignment.
+#' @details The \code{add_hgnc_symbol} function takes an annotation table 
 #' produced by \code{assign_score} and adds two columns, one with 
 #' the HGNC gene symbol, and one specifying whether the probe is 
 #' mapping the forward or the reverse strand of the gene.
@@ -10,14 +12,9 @@
 #' @param best_match_col character, the name of the column containing
 #' the best matching gene. Default is \code{best_match}.
 #' @examples
-#' \dontrun{
-#' # Assume that probe_set_annotation contains two columns:
-#' # probeset_id and quality_string
-#' # Assign the score and identify the best match
-#' annotation_with_score <- assign_score(x = probe_set_annotation)
-#' # Add the HGNC symbol
+#' data(psets_and_qstrings)
+#' annotation_with_score <- assign_score(x=psets_and_qstrings)
 #' annotation_with_hgnc <- add_hgnc_symbol(annot=annotation_with_score)
-#' }
 #' @return a data frame containing the annotation table with the 
 #' final score, the best matches, the HGNC symbol and the strand 
 #' information.

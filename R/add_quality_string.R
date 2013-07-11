@@ -1,11 +1,11 @@
-#' Generate the annotation table that will be used for the quality 
-#' string
+#' @title Generate the quality string from a Bowtie alignment
 #'
-#' @title Generate the annotation table that will be used for the 
+#' @description Compute a probe set quality string from a Bowtie alignment
+#' and create a minimal annotation containing the probe set ID and the
 #' quality string.
 #' @param input.file character string containing the full path to
 #' the input file (a Bowtie output file preprocessed by 
-#' `preprocess_bowtie_output.R`)
+#' `preprocess_bowtie_output.py`)
 #' @param chip character, the type of ALMAC array under
 #' consideration. It can be either \code{adxcrc} or \code{xcel}.
 #' The default is \code{adxcrc}.
@@ -22,7 +22,7 @@
 #' the gene/refseq ID is preceded by \code{ANTISENSE}.
 #' @examples
 #' \dontrun{
-#' input.file <- "/export/big/Data/almac_annotations/new_annotation_2013/output/formatted_xcel_subset.txt"
+#' input.file <- "/export/big/Data/almac_annotations/new_annotation_2013/output/preprocessed_xcel_map.txt"
 #' output.file <- "~/Desktop/pset_and_qscores.RData"
 #' add_quality_string(input.file = input.file, chip = "xcel", output.file = output.file)
 #' }

@@ -9,6 +9,9 @@
 #' the quality string computed by \code{add_quality_string}
 #' @param qs_col character, name of the column containing the quality
 #' string. Defaults to \code{quality_string}.
+#' @param w numeric weights to be given to the number of mismatches.
+#' Default is 1 for zero mismatches, -1/2 for one, -1/3 for two and
+#' -1/4 for three mismatches. 
 #' @examples
 #' data(psets_and_qstrings)
 #' new_annot <- assign_score(psets_and_qstrings)
@@ -17,10 +20,12 @@
 #' match and the final score.
 #' @author Giovanni d'Ario
 #' @export
-assign_score <- function(x, qs_col="quality_string") {
+assign_score <- function(x, qs_col="quality_string",
+                         w=c(1, -1/2, -1/3, -1/4)) {
     quality_strings <- x[[qs_col]]
     best_match_and_score <- sapply(quality_strings,
                                    compute_score,
+                                   w = w,
                                    simplify = FALSE)
     names(best_match_and_score) <- NULL
     best_match_and_score <- do.call(rbind, best_match_and_score)
@@ -29,26 +34,29 @@ assign_score <- function(x, qs_col="quality_string") {
     return(out)
 }
 
-#' Assign a score to each gene of a quality table
-#' 
-#' \code{compute_score} takes a table produced by 
-#' \code{quality_string_to_table} assigns a numeric score to each
+#' @title Assign a score to each gene of a quality table
+#' @description This function computes a probe setquality score 
+#' starting from the quality string.
+#' @details The \code{compute_score} function takes a table produced by 
+#' \code{quality_string_to_table} and assigns a numeric score to each
 #' column (gene or refseq, depending on how the table has been 
 #' created). The details of the score are described below.
 #' The idea behind this function is to provide the
-#' user with a quick measure of the qualityt of the probe set.
+#' user with a quick measure of the quality of the probe set.
 #' However, when a low score probe set is encountered, we recommend
 #' to call \code{quality_string_to_table} in order to have a more
 #' complete picture.
-#' The scoring method used here assign one point to each
-#' zero-mismatch probe, -1/2 to each 1-mismatch, -1/3 to 2-mismatch 
-#' and -1/4 to 3-mismatch probes. The gene with the highest score 
+#' The default scoring method assigns one point to each
+#' zero-mismatch probe, -1/2 to 1-mismatch probes, -1/3 to 2-mismatch 
+#' probes and -1/4 to 3-mismatch probes. The gene with the highest score 
 #' is then selected. The final score is obtained subtacting the 
-#' absolute value of the second best score from the first one. The 
-#' absolute value is due to the fact that some second hits could be
-#' only mismatches, and an overall negative score. 
-#' The rationale behind this choice is probably clearer 
-#' looking at some examples.
+#' absolute value of the second best score from the best score. The 
+#' absolute value is due to the fact that some second-best hits could be
+#' containing only mismatches, so that they would have an overall 
+#' negative score. Thus, subtracting the second best score from the 
+#' best one would actually \emph{increase} it.
+#' Below we show some examples (but it is by no means supposed to be
+#' and exhaustive list.)
 #' \enumerate{
 #' \item if all the probes are perfectly matching and no mismatch or
 #' cross-hybridization problem occurs, the score equals the number
@@ -76,8 +84,8 @@ assign_score <- function(x, qs_col="quality_string") {
 #' data("psets_and_qstrings")
 #' s <- psets_and_qstrings$quality_string[1]
 #' x <- quality_string_to_table(s)
-#' @author Giovanni d'Ario <giovanni.dario@gmail.com>
-compute_score <- function(x, w=c(1, -1/2, -1/3, -1/4)) {
+#' @author Giovanni d'Ario
+compute_score <- function(x, w) {
     
     if(is.character(x))
         x <- quality_string_to_table(x)
